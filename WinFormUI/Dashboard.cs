@@ -1,19 +1,14 @@
 ﻿using DemoLibrary;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinFormUI
 {
     public partial class Dashboard : Form
     {
-        ShoppingCartModel cart = new ShoppingCartModel();
+        readonly ShoppingCartModel cart = new ShoppingCartModel();
 
         public Dashboard()
         {
@@ -31,16 +26,33 @@ namespace WinFormUI
 
         private void messageBoxDemoButton_Click(object sender, EventArgs e)
         {
-            
+            decimal total = cart.GenerateTotal(SubTotalAlert, CalculateLeveledDiscount, PrintOutDiscountAlert);
+            MessageBox.Show($"The total is {total:C2}");
+
         }
 
         private void PrintOutDiscountAlert(string discountMessage)
         {
-            
+            MessageBox.Show(discountMessage);
+        }
+
+        private void SubTotalAlert(decimal subTotal)
+        {
+            MessageBox.Show($"The subtotal is {subTotal:C2}");
+        }
+
+        private decimal CalculateLeveledDiscount(List<ProductModel> products, decimal subTotal)
+        {
+            return subTotal - products.Count();
         }
 
         private void textBoxDemoButton_Click(object sender, EventArgs e)
         {
+            decimal total = cart.GenerateTotal((subTotal) => subTotalTextBox.Text = $"{subTotal:C2}",
+                (products, subTotal) => subTotal - (products.Count * 2),
+                (message) => { });
+
+            totalTextBox.Text = $"{total:C2}";
         }
     }
 }
